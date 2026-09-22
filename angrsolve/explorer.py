@@ -185,6 +185,9 @@ def explore(
     if cfg.max_active is not None:
         simgr.active_state_limit = cfg.max_active
 
+    if cfg.max_depth is not None:
+        simgr.use_technique(angr.exploration_techniques.LengthLimiter(cfg.max_depth, drop=True))
+
     # Set up a step_func callback that checks timeout and logs progress.
     step_counts: List[int] = [0]
     timed_out: List[bool] = [False]

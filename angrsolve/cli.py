@@ -213,8 +213,24 @@ def build_input_configs(args: argparse.Namespace) -> List[InputConfig]:
     return configs
 
 
+def _parse_custom_bytes(spec: str) -> List[int]:
+    """Parse a spec like '0x20,0x30-0x40' into a list of byte values."""
+    values: List[int] = []
+    for token in spec.split(","):
+        token = token.strip()
+        if not token:
+            continue
+        if "-" in token:
+            lo_s, hi_s = token.split("-", 1)
+            values.extend(range(int(lo_s, 0), int(hi_s, 0) + 1))
+        else:
+            values.append(int(token, 0))
+    return values
+
+
 def build_constraint_config(args: argparse.Namespace) -> ConstraintConfig:
-    return ConstraintConfig(mode=args.mode)
+    custom_bytes = _parse_custom_bytes(args.custom_bytes) if args.custom_bytes else None
+    return ConstraintConfig(mode=args.mode, custom_bytes=custom_bytes)
 
 
 def build_explore_config(args: argparse.Namespace) -> ExploreConfig:
